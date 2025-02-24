@@ -1,3 +1,5 @@
+import os
+import subprocess
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -8,9 +10,16 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# Install Chrome if not already installed
+CHROME_PATH = "/usr/bin/google-chrome"
+if not os.path.exists(CHROME_PATH):
+    subprocess.run("curl -o /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb", shell=True)
+    subprocess.run("sudo dpkg -i /tmp/chrome.deb || sudo apt-get -f install -y", shell=True)
+
 def get_driver():
-    """Set up Selenium Chrome WebDriver."""
+    """Set up Selenium Chrome WebDriver with the correct Chrome binary."""
     chrome_options = Options()
+    chrome_options.binary_location = CHROME_PATH  # ✅ Set Chrome binary location
     chrome_options.add_argument("--headless")  
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
