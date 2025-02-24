@@ -1,0 +1,16 @@
+{
+  "build": {
+    "env": {
+      "PYTHON_VERSION": "3.12"
+    }
+  },
+  "services": [
+    {
+      "name": "selenium",
+      "startCommand": "python server.py",
+      "envVars": {
+        "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/chromium"
+      }
+    }
+  ]
+}
