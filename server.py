@@ -1,5 +1,4 @@
 import os
-import subprocess
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -10,18 +9,13 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Install Chromium manually
-if not os.path.exists("/usr/bin/chromium-browser"):
-    subprocess.run(
-        "apt-get update && apt-get install -y chromium-browser",
-        shell=True,
-        check=True
-    )
-
 def get_driver():
-    """Set up Selenium with Chromium."""
+    """Set up Selenium with Render's default Chromium."""
     chrome_options = Options()
-    chrome_options.binary_location = "/usr/bin/chromium-browser"  # ✅ Use Chromium
+    
+    # Use the default Render path for Chromium
+    chrome_options.binary_location = "/usr/bin/chromium-browser"
+    
     chrome_options.add_argument("--headless")  
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
