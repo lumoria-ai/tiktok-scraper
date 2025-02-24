@@ -10,40 +10,23 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Define Chrome paths
-CHROME_PATH = "/opt/render/project/.google-chrome/google-chrome"
-CHROMEDRIVER_PATH = "/opt/render/project/.chromedriver/bin/chromedriver"
-
-# Install Chrome and Chromedriver manually (if not installed)
-if not os.path.exists(CHROME_PATH):
+# Install Chromium manually
+if not os.path.exists("/usr/bin/chromium-browser"):
     subprocess.run(
-        "mkdir -p /opt/render/project/.google-chrome && curl -o /opt/render/project/.google-chrome/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb",
+        "apt-get update && apt-get install -y chromium-browser",
         shell=True,
-    )
-    subprocess.run(
-        "dpkg -x /opt/render/project/.google-chrome/chrome.deb /opt/render/project/.google-chrome/",
-        shell=True,
-    )
-    subprocess.run(
-        "mv /opt/render/project/.google-chrome/opt/google/chrome/google-chrome /opt/render/project/.google-chrome/",
-        shell=True,
-    )
-
-if not os.path.exists(CHROMEDRIVER_PATH):
-    subprocess.run(
-        "mkdir -p /opt/render/project/.chromedriver/bin && curl -Lo /opt/render/project/.chromedriver/bin/chromedriver https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip && unzip /opt/render/project/.chromedriver/bin/chromedriver -d /opt/render/project/.chromedriver/bin && chmod +x /opt/render/project/.chromedriver/bin/chromedriver",
-        shell=True,
+        check=True
     )
 
 def get_driver():
-    """Set up Selenium Chrome WebDriver with the correct binary paths."""
+    """Set up Selenium with Chromium."""
     chrome_options = Options()
-    chrome_options.binary_location = CHROME_PATH  # ✅ Set Chrome binary location
+    chrome_options.binary_location = "/usr/bin/chromium-browser"  # ✅ Use Chromium
     chrome_options.add_argument("--headless")  
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
-    service = Service(CHROMEDRIVER_PATH)  # ✅ Use manually installed Chromedriver
+    service = Service(ChromeDriverManager().install())  
     return webdriver.Chrome(service=service, options=chrome_options)
 
 def extract_video_views(driver, video_url):
